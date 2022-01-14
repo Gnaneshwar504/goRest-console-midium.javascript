@@ -1,0 +1,73 @@
+let consoleFormEl = document.getElementById("consoleForm");
+let requestUrlEl = document.getElementById("requestUrl");
+let responseStatusEl = document.getElementById("responseStatus");
+let requestUrlErrMsgEl = document.getElementById("requestUrlErrMsg");
+let requestMethodEl = document.getElementById("requestMethod");
+let requestBodyEl = document.getElementById("requestBody");
+let responseBodyEl = document.getElementById("responseBody");
+
+
+let sendRequestBtnEl = document.getElementById("sendRequestBtn");
+
+let formdata = {
+    url: "https://gorest.co.in/public-api/users",
+    requestmthed: "POST",
+    requestBody: ""
+};
+
+requestUrlEl.addEventListener("change", function(event) {
+    formdata.url = event.target.value;
+});
+requestMethodEl.addEventListener("change", function(event) {
+    formdata.requestmthed = event.target.value;
+});
+requestBodyEl.addEventListener("change", function(event) {
+    formdata.requestBody = event.target.value;
+});
+
+function validaterequest(formdata) {
+    let {
+        requestUrl
+    } = formdata;
+    if (requestUrl === "") {
+        requestUrlErrMsgEl.textContent = "Required";
+        requestUrlErrMsgEl.style.color = "red";
+    } else {
+        requestUrlErrMsgEl.textContent = "";
+    }
+}
+
+function sendrequest(formdata) {
+    let {
+        url,
+        requestmthed,
+        requestBody
+    } = formdata;
+
+    let options = {
+        method: requestmthed,
+        headers: {
+            "content-type": "application/json",
+            Accept: "application/json",
+            Authoraztion: ""
+        },
+        body: requestBody
+    };
+    fetch(url, options)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(jsonData) {
+            let status = jsonData.code;
+            let body = JSON.stringify(jsonData);
+            responseStatusEl.value = status;
+            responseBodyEl.value = body;
+        });
+}
+
+consoleFormEl.addEventListener("submit", function(event) {
+    event.preventDefault();
+    validaterequest(formdata);
+    sendrequest(formdata);
+
+});
